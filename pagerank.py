@@ -46,8 +46,6 @@ def crawl(directory):
         )
 
     return pages
-
-
 def transition_model(corpus, page, damping_factor):
     """
     Return a probability distribution over which page to visit next,
@@ -57,9 +55,23 @@ def transition_model(corpus, page, damping_factor):
     linked to by `page`. With probability `1 - damping_factor`, choose
     a link at random chosen from all pages in the corpus.
     """
-    raise NotImplementedError
-
-
+    temp = dict(corpus)
+    test = list(corpus[f"{page}"])
+    """
+    sets the probability of the serfer going to a file that it is not already on
+    """
+    for i in range(0,len(test)):
+      temp[f"{test[i]}"] = damping_factor/(len(test))
+    test = list(corpus)
+    """
+    adjusts probablity for 1-damping_factor
+    """
+    for i in range(len(corpus)):
+      if not isinstance(temp[f"{test[i]}"], float):
+        temp[f"{test[i]}"] = round((1-damping_factor)/len(corpus),2)
+      else:
+        temp[f"{test[i]}"] = temp[f"{test[i]}"]+(1-damping_factor)/len(corpus) 
+    return(temp)
 def sample_pagerank(corpus, damping_factor, n):
     """
     Return PageRank values for each page by sampling `n` pages
@@ -69,7 +81,19 @@ def sample_pagerank(corpus, damping_factor, n):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    tmp = dict(corpus)
+    tmp2 = dict(corpus)
+    for i in range(len(tmp)):
+      tmp[f"{i+1}.html"] = 0
+    take = transition_model(tmp2,random.choice(list(tmp2)),damping_factor)
+    for i in range(0,n):
+      temp = random.choices(list(take),weights = list(take.values()),k = 1)
+      tmp[f"{temp[0]}"]+=1
+      take = transition_model(tmp2,f"{temp[0]}",damping_factor)
+    for i in range(len(tmp)):
+      tmp[f"{i+1}.html"] = round((tmp[f"{i+1}.html"]/n)*100,1)
+    return(tmp)
+  
 
 
 def iterate_pagerank(corpus, damping_factor):
@@ -81,7 +105,7 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    #raise NotImplementedError
 
 
 if __name__ == "__main__":
