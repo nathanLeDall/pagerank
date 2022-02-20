@@ -68,7 +68,7 @@ def transition_model(corpus, page, damping_factor):
     """
     for i in range(len(corpus)):
       if not isinstance(temp[f"{test[i]}"], float):
-        temp[f"{test[i]}"] = round((1-damping_factor)/len(corpus),2)
+        temp[f"{test[i]}"] = (1-damping_factor)/len(corpus)
       else:
         temp[f"{test[i]}"] = temp[f"{test[i]}"]+(1-damping_factor)/len(corpus) 
     return(temp)
@@ -90,8 +90,6 @@ def sample_pagerank(corpus, damping_factor, n):
       temp = random.choices(list(take),weights = list(take.values()),k = 1)
       tmp[f"{temp[0]}"]+=1
       take = transition_model(tmp2,f"{temp[0]}",damping_factor)
-    for i in range(len(tmp)):
-      tmp[f"{i+1}.html"] = round((tmp[f"{i+1}.html"]/n)*100,1)
     return(tmp)
   
 
@@ -105,7 +103,32 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    #raise NotImplementedError
+    rank = dict(corpus)
+    for i in range(len(corpus)):
+      rank[f"{i+1}.html"] = 1/len(corpus)
+    while True:
+      temp=dict()
+      for currpage in rank:
+        currpagerank = (1-damping_factor)/len(corpus)
+        for i,j in corpus.items():
+          if j:
+            if i != currpage and currpage in j:
+              currpagerank += damping_factor * (rank[i] / len(corpus[i]))
+          else:
+            currpagerank += damping_factor * (rank[i] / len(corpus))
+        temp[currpage] = currpagerank
+      if change(temp, rank):
+        return temp
+      rank = temp.copy()
+def change(temp,rank):
+  for i in temp:
+
+    if not temp[i]:
+      return False
+    diff = (temp[i]-rank[i])
+    if round(diff,3)>0:
+      return False
+  return True
 
 
 if __name__ == "__main__":
