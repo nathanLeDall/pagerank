@@ -9,8 +9,8 @@
             "type": "python",
             "request": "launch",
             "program": "pagerank.py",
-            "cwd":"${workspaceFolder}/pagerank/",
-            
+            "cwd":"${workspaceFolder}",
+    "args": ["corpus0"],            
             "console": "integratedTerminal"
         }
     ]
