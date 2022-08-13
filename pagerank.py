@@ -60,8 +60,12 @@ def transition_model(corpus, page, damping_factor):
     """
     sets the probability of the serfer going to a file that it is not already on
     """
-    for i in range(0,len(test)):
-      temp[f"{test[i]}"] = damping_factor/(len(test))
+    for i in temp:
+      if(test==list()):
+        temp[i] = 0
+        continue
+      temp[i] = damping_factor/(len(test))
+        
     test = list(corpus)
     """
     adjusts probablity for 1-damping_factor
@@ -83,11 +87,14 @@ def sample_pagerank(corpus, damping_factor, n):
     """
     tmp = dict(corpus)
     tmp2 = dict(corpus)
-    for i in range(len(tmp)):
-      tmp[f"{i+1}.html"] = 0
+    for i in tmp:
+      tmp[i] = 0
     take = transition_model(tmp2,random.choice(list(tmp2)),damping_factor)
     for i in range(0,n):
       temp = random.choices(list(take),weights = list(take.values()),k = 1)
+      """print(temp)
+      print(tmp[f"{temp[0]}"])
+      print(tmp)"""
       tmp[f"{temp[0]}"]+=1/n
       take = transition_model(tmp2,f"{temp[0]}",damping_factor)
     return(tmp)
@@ -104,8 +111,8 @@ def iterate_pagerank(corpus, damping_factor):
     PageRank values should sum to 1.
     """
     rank = dict(corpus)
-    for i in range(len(corpus)):
-      rank[f"{i+1}.html"] = 1/len(corpus)
+    for i in corpus:
+      rank[i] = 1/len(corpus)
     while True:
       temp=dict()
       for currpage in rank:
